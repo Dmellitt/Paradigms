@@ -1,0 +1,7 @@
+Update: Set up basic framework for TCP stuff but currently they are both sending data to each other but neither seems to be receivig anything :/.
+
+The way I set it up as of now is for player1 to start the connection and player 2 joins, then the game starts.
+
+Ill have more time to look at it tomorrow but lmk if you know why theyre not receiving any data.
+
+Also newt is wayyyy faster than ash for testing it fyi.
