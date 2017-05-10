@@ -1,7 +1,26 @@
-Update: Set up basic framework for TCP stuff but currently they are both sending data to each other but neither seems to be receivig anything :/.
+Programming Paradigms Final Project - David Mellitt & James Farrington
+----------------------------------------------------------------------
 
-The way I set it up as of now is for player1 to start the connection and player 2 joins, then the game starts.
+For our final project we created a 2-player spaceship shooting game. To play the game follow these steps:
 
-Ill have more time to look at it tomorrow but lmk if you know why theyre not receiving any data.
+1. Make sure you have access to python2 (not python3) with the pygame and twisted libraries installed
+	i.e. running 'python' on ash or on newt comes ready with these libraries
 
-Also newt is wayyyy faster than ash for testing it fyi.
+2. Player 1 should run 'python player1.py' while logged onto newt.campus.nd.edu (player2 is set to listen on newt as it was faster for our testing)
+
+3. Player 2 should run 'python player2.py' again preferably on newt.campus.nd.edu
+
+4. Both players can control their spaceship using the 'WASD' keys to move around and the SPACE bar to shoot.
+	A and D rotate the player's ship while W and S accelerate the ship moving forwards or backwards.
+
+5. Players can now fire missiles at each other using SPACE bar. Each time a player is hit, their spaceship shrinks in size.
+	After a certain number of hits, the spaceship is exploded.
+	
+6. To exit simply hit the x arrow in the top right.
+
+The game continues even after one player is eliminated as the other player is still able to fly around in celebration :).
+
+The gameplay works by having each player send their ship's location, velocity, and lasers to the other player via TCP.
+You might see some slight "rubberbanding" if one player is on a slower connection as their ship will keep getting reset
+on the other player's screen. This occurs because we mimic the other player's ship's movement for each player (i.e.
+we have an instance of both ships for each player and update the enemy's ship's velocity and movement accordingly).
