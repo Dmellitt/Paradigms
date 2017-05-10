@@ -4,7 +4,7 @@ from twisted.internet.protocol import Protocol, Factory, ClientFactory
 from twisted.internet import reactor
 from twisted.internet.task import LoopingCall
 import json
-import pygame, math
+import pygame, math, sys
 
 FPS = 60
 
@@ -156,7 +156,7 @@ class Player(pygame.sprite.Sprite):
 			for l in self.lasers:
 				self.lasersHolder.append(LaserContainer(l).__dict__)
 			self.sendData = [self.courier.__dict__, self.lasersHolder]
-			print json.dumps(self.sendData)
+			print(json.dumps(self.sendData))
 			self.space.dataFactory.dataConn.forwardData(json.dumps(self.sendData))
 		except Exception as err:
 			print(err)
@@ -243,16 +243,17 @@ class GameSpace:
 
 
 	def run_game(self):
-		event_loop = LoopingCall(self.main)
-		update_player2 = LoopingCall(self.player.update,"data\r\n\r\n")
-		event_loop.start(1/FPS) #run loop every 1/FPS seconds
-		update_player2.start(5)
+		self.event_loop = LoopingCall(self.main)
+		self.update_player2 = LoopingCall(self.player.update,"data\r\n\r\n")
+		self.event_loop.start(1/FPS) #run loop every 1/FPS seconds
+		self.update_player2.start(.1)
 
 	def main(self):
-		print('running')
 		for event in pygame.event.get():
 			if event.type == pygame.QUIT:
-				done = True
+				self.event_loop.stop()
+				self.update_player2.stop()
+				reactor.stop()
 			else:
 				self.player.handle(event)
 
@@ -272,7 +273,7 @@ class DataConnection(Protocol):
 		self.space = space;
 	def forwardData(self, data):
 		print ('Player 1 sending data: '),data
-		self.transport.write(data)
+		self.transport.write(data.encode('utf-8'))
 	def dataReceived(self, data):
 		print ('Player 1 Received data:'), data
 		self.space.player2.updatePlayer2(data)
@@ -292,7 +293,7 @@ class DataConnectionFactory(ClientFactory):
 
 if __name__ == "__main__":
 	gs = GameSpace()
-	reactor.connectTCP("newt.campus.nd.edu",40022, DataConnectionFactory(gs))
+	reactor.connectTCP('localhost', 40022, DataConnectionFactory(gs))
 	reactor.run()
 
 
